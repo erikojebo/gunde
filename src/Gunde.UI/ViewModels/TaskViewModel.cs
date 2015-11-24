@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -25,11 +27,13 @@ namespace Gunde.UI.ViewModels
             _task = task;
             _resultListener = resultListener;
 
-            //var uiExecutableAttribute = taskType.GetCustomAttribute<UIExecutableAttribute>();
+            var descriptionAttriute = task.GetCustomAttributes(typeof(DescriptionAttribute), true)
+                .Cast<DescriptionAttribute>()
+                .FirstOrDefault();
 
             TaskType = taskType;
             Name = GetDisplayName(task);
-            Description = "";//uiExecutableAttribute.Description;
+            Description = descriptionAttriute.Description;
             DependencyGroupOrder = null;//uiExecutableAttribute.OptionalDependencyGroupOrder;
             Parameters = new ObservableCollection<TaskParameterViewModel>(parameterViewModels);
             ExecuteCommand = new DelegateCommand(Execute);
@@ -105,24 +109,34 @@ namespace Gunde.UI.ViewModels
             {
                 _resultListener.OutputLine($"[{DateTime.Now}] Starting task '{Name}'...");
 
-                try
-                {
-                    var instance = Activator.CreateInstance(TaskType);
-                    _task.Invoke(instance, Parameters.Select(x => x.TypedValue).ToArray());
+                var consoleOut = Console.Out;
 
-                    _resultListener.OutputLine($"[{DateTime.Now}] Task finished");
+                using (var writer = new StringWriter())
+                {
+                    Console.SetOut(writer);
 
-                    return true;
-                }
-                catch (Exception ex)
-                {
-                    EventAggregator.FireTaskExecutionFailed(ex.Message);
-                    _resultListener.OutputLine("Exception occurred:");
-                    _resultListener.OutputLine(ex.ToString());
-                }
-                finally
-                {
-                    InvokeUIAction(() => { IsTaskProgressIndeterminate = true; });
+                    try
+                    {
+                        var instance = Activator.CreateInstance(TaskType);
+                        _task.Invoke(instance, Parameters.Select(x => x.TypedValue).ToArray());
+
+                        _resultListener.OutputLine(writer.ToString());
+                        _resultListener.OutputLine($"[{DateTime.Now}] Task finished");
+
+                        return true;
+                    }
+                    catch (Exception ex)
+                    {
+                        EventAggregator.FireTaskExecutionFailed(ex.Message);
+                        _resultListener.OutputLine(writer.ToString());
+                        _resultListener.OutputLine("Exception occurred:");
+                        _resultListener.OutputLine(ex.ToString());
+                    }
+                    finally
+                    {
+                        Console.SetOut(consoleOut);
+                        InvokeUIAction(() => { IsTaskProgressIndeterminate = true; });
+                    }
                 }
 
                 return false;
@@ -131,10 +145,11 @@ namespace Gunde.UI.ViewModels
 
         public static string GetDisplayName(MethodInfo taskType)
         {
-            //var attribute = taskType.GetCustomAttribute<UIExecutableAttribute>();
-            //return attribute.DisplayName ?? taskType.Name;
+            var attribute = taskType.GetCustomAttributes(typeof(DisplayNameAttribute), true)
+                    .Cast<DisplayNameAttribute>()
+                    .FirstOrDefault();
 
-            return taskType.Name;
+            return attribute?.DisplayName ?? taskType.Name;
         }
     }
 }

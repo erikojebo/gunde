@@ -3,9 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Gunde.UIRunner"
         mc:Ignorable="d"
-        Title="Gunde" Height="800" Width="1400">
+        Title="Gunde" Height="800" Width="1400"
+        Icon="Images/mossa.jpg">
 
     <Window.Resources>
         <!--<Style TargetType="Button">
@@ -57,12 +57,12 @@
             </StackPanel.Resources>
             
             <TextBlock Text="Current assembly" FontWeight="Bold" />
-            <TextBlock Text="{Binding TaskAssemblyFileName}" Margin="0 0 0 20" />
+            <TextBlock Text="{Binding TaskAssemblyFileName}" Margin="0 0 0 20" HorizontalAlignment="left" MaxWidth="150" TextWrapping="Wrap" />
             
             <Button Click="OnBrowseTaskAssemblyClick">Find assembly</Button>
             <Button Command="{Binding InitializeTaskListCommand}">Reload current assembly</Button>
             
-            <Button Command="{Binding ExecuteAllTasksCommand}">Execute all tasks</Button>
+            <!--<Button Command="{Binding ExecuteAllTasksCommand}">Execute all tasks</Button>-->
         </StackPanel>
         
         <!-- Automation task groups -->
@@ -148,7 +148,12 @@
                                                 HorizontalAlignment="Right"
                                                 Visibility="{Binding IsTaskExecuting, Converter={StaticResource BoolToVisibilityConverter}}" />
 
-                                            <TextBlock Grid.Row="1" Text="{Binding Description}" FontSize="12"
+                                            <TextBlock Grid.Row="1" 
+                                                       Text="{Binding Description}" 
+                                                       FontSize="12"
+                                                       MaxWidth="500"
+                                                       TextWrapping="Wrap"
+                                                       HorizontalAlignment="Left"
                                                        Visibility="{Binding HasDescription, Converter={StaticResource BoolToVisibilityConverter}}" />
 
                                             <ListView
@@ -165,7 +170,7 @@
                                                     </Style>
                                                 </ListView.ItemContainerStyle>
 
-                                                <!-- Constructor parameter -->
+                                                <!-- Method parameter -->
                                                 <ListView.ItemTemplate>
                                                     <DataTemplate>
                                                         <Grid>
@@ -189,7 +194,7 @@
                                                                 <ColumnDefinition Width="200" />
                                                             </Grid.ColumnDefinitions>
 
-                                                            <!-- Constructor parameter content -->
+                                                            <!-- Method parameter content -->
                                                             <TextBlock Grid.Column="0" Text="{Binding DisplayText}" />
                                                             <TextBlock Grid.Column="1" Text="{Binding TypeName}" Margin="10 0" />
                                                             <TextBox Grid.Column="2" DockPanel.Dock="Right"

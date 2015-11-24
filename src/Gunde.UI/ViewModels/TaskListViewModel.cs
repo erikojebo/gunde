@@ -65,7 +65,15 @@ namespace Gunde.UI.ViewModels
         public void OutputLine(string message, params object[] formatParams)
         {
             Application.Current.Dispatcher.Invoke(
-                (Action)(() => { Log += Environment.NewLine + string.Format(message, formatParams); }));
+                (Action)(() =>
+                {
+                    string formattedMessage = message;
+
+                    if (formatParams.Any())
+                        formattedMessage = string.Format(message, formatParams);
+
+                    Log += Environment.NewLine + formattedMessage;
+                }));
         }
 
         public void InitializeTaskList()
