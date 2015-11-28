@@ -5,9 +5,9 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Gunde.Core.Output;
+using Gunde.Core.Reflection;
 using Gunde.UI.Infrastructure;
 using Gunde.UI.Mvvm;
 
@@ -32,11 +32,13 @@ namespace Gunde.UI.ViewModels
                 .FirstOrDefault();
 
             TaskType = taskType;
-            Name = GetDisplayName(task);
+            Name = task.GetDisplayName();
             Description = descriptionAttriute.Description;
             DependencyGroupOrder = null;//uiExecutableAttribute.OptionalDependencyGroupOrder;
             Parameters = new ObservableCollection<TaskParameterViewModel>(parameterViewModels);
             ExecuteCommand = new DelegateCommand(Execute);
+            ExpandCommand = new DelegateCommand(Expand);
+            CollapseCommand = new DelegateCommand(Collapse);
         }
 
         public Type TaskType { get; }
@@ -51,6 +53,12 @@ namespace Gunde.UI.ViewModels
         {
             get { return Get(() => IsTaskExecuting); }
             set { Set(() => IsTaskExecuting, value); }
+        }
+
+        public bool? IsExpanded
+        {
+            get { return Get(() => IsExpanded); }
+            set { Set(() => IsExpanded, value); }
         }
 
         public double TaskProgressPercentageValue
@@ -74,6 +82,8 @@ namespace Gunde.UI.ViewModels
         
         public ObservableCollection<TaskParameterViewModel> Parameters { get; }
         public DelegateCommand ExecuteCommand { get; }
+        public DelegateCommand ExpandCommand { get; }
+        public DelegateCommand CollapseCommand { get; }
 
         public bool HasValidParameterValues
         {
@@ -90,6 +100,16 @@ namespace Gunde.UI.ViewModels
         {
             get { return Get(() => CouldBeExecuted); }
             set { Set(() => CouldBeExecuted, value); }
+        }
+
+        public void Expand()
+        {
+            IsExpanded = true;
+        }
+
+        public void Collapse()
+        {
+            IsExpanded = false;
         }
 
         public async void Execute()
@@ -141,15 +161,6 @@ namespace Gunde.UI.ViewModels
 
                 return false;
             });
-        }
-
-        public static string GetDisplayName(MethodInfo taskType)
-        {
-            var attribute = taskType.GetCustomAttributes(typeof(DisplayNameAttribute), true)
-                    .Cast<DisplayNameAttribute>()
-                    .FirstOrDefault();
-
-            return attribute?.DisplayName ?? taskType.Name;
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
+using Gunde.Core.Reflection;
 using Gunde.UI.Mvvm;
 
 namespace Gunde.UI.ViewModels
@@ -11,7 +12,7 @@ namespace Gunde.UI.ViewModels
     {
         public TaskGroupViewModel(Type taskType, TaskListViewModel taskListViewModel)
         {
-            Name = taskType.Name;
+            Name = taskType.GetDisplayName();
             Tasks = new ObservableCollection<TaskViewModel>();
 
             var allowedParameterTypes = new[]

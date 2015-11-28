@@ -66,7 +66,7 @@
         </StackPanel>
         
         <!-- Automation task groups -->
-        <ListView
+        <ItemsControl
             Grid.Column="1"
             ItemsSource="{Binding TaskGroups}"
             HorizontalContentAlignment="Stretch"
@@ -74,49 +74,48 @@
             BorderThickness="0"
             ScrollViewer.CanContentScroll="False">
 
-            <ListView.ItemTemplate>
+            <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Margin="0 0 0 30">
                         
-                        <TextBlock Text="{Binding Name}" FontSize="25" Margin="10 0 0 0" Visibility="{Binding HasName, Converter={StaticResource BoolToVisibilityConverter}}" />
+                        <TextBlock Text="{Binding Name}" FontSize="25" Visibility="{Binding HasName, Converter={StaticResource BoolToVisibilityConverter}}" />
                         
                         <!-- Automation tasks -->
-                        <ListBox
+                        <ItemsControl
                             ItemsSource="{Binding Tasks}"
                             HorizontalContentAlignment="Stretch"
                             Background="Transparent"
                             BorderThickness="0">
 
-                            <ListBox.ItemContainerStyle>
-                                <Style TargetType="ListBoxItem">
-                                    <Setter Property="Focusable" Value="false" />
-
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding WasSuccessful}" Value="True">
-                                            <Setter Property="Background" Value="#dff0d8" />
-                                            <Setter Property="Foreground" Value="#3c763d" />
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding WasSuccessful}" Value="False">
-                                            <Setter Property="Background" Value="#f2dede" />
-                                            <Setter Property="Foreground" Value="#a94442" />
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding WasIgnored}" Value="True">
-                                            <Setter Property="Background" Value="#ececec" />
-                                            <Setter Property="Foreground" Value="#a0a0a0" />
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding CouldBeExecuted}" Value="False">
-                                            <Setter Property="Background" Value="#fcf8e3" />
-                                            <Setter Property="Foreground" Value="#8a6d3b" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </ListBox.ItemContainerStyle>
-                            <ListBox.ItemTemplate>
+                            <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <Border BorderThickness="0 0 0 1" BorderBrush="#efefef">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding WasSuccessful}" Value="True">
+                                                        <Setter Property="Background" Value="#dff0d8" />
+                                                        <Setter Property="TextBlock.Foreground" Value="#3c763d" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding WasSuccessful}" Value="False">
+                                                        <Setter Property="Background" Value="#f2dede" />
+                                                        <Setter Property="TextBlock.Foreground" Value="#a94442" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding WasIgnored}" Value="True">
+                                                        <Setter Property="Background" Value="#ececec" />
+                                                        <Setter Property="TextBlock.Foreground" Value="#a0a0a0" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding CouldBeExecuted}" Value="False">
+                                                        <Setter Property="Background" Value="#fcf8e3" />
+                                                        <Setter Property="TextBlock.Foreground" Value="#8a6d3b" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
                                         <!-- Automation task content -->
                                         <Grid Margin="5 15">
                                             <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto" />
                                                 <RowDefinition Height="Auto" />
                                                 <RowDefinition Height="Auto" />
                                                 <RowDefinition Height="Auto" />
@@ -131,11 +130,25 @@
                                                 <TextBlock Text="{Binding Name}" FontSize="16" />
                                             </StackPanel>
 
-                                            <Button Grid.Row="0" Command="{Binding ExecuteCommand}"
-                                                    HorizontalAlignment="Right"
-                                                    Margin="0 3 0 0">
-                                                Run task
-                                            </Button>
+                                            <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Right">
+                                                <Button Command="{Binding ExecuteCommand}"
+                                                        Margin="0 3 10 0">
+                                                    Run task
+                                                </Button>
+
+                                                <Button Command="{Binding ExpandCommand}"
+                                                        Margin="0 3 0 0"
+                                                        Visibility="{Binding IsExpanded, Converter={StaticResource InvertedBoolToVisibilityConverter}}">
+                                                    Expand
+                                                </Button>
+
+                                                <Button Command="{Binding CollapseCommand}"
+                                                        HorizontalAlignment="Right"
+                                                        Margin="0 3 0 0"
+                                                        Visibility="{Binding IsExpanded, Converter={StaticResource BoolToVisibilityConverter}}">
+                                                    Collapse
+                                                </Button>
+                                            </StackPanel>
 
                                             <ProgressBar
                                                 Grid.Row="0"
@@ -156,22 +169,18 @@
                                                        HorizontalAlignment="Left"
                                                        Visibility="{Binding HasDescription, Converter={StaticResource BoolToVisibilityConverter}}" />
 
-                                            <ListView
+                                            <ItemsControl
                                                 Grid.Row="2"
                                                 Margin="0, 10, 0, 0"
                                                 ItemsSource="{Binding Parameters}"
                                                 HorizontalContentAlignment="Stretch"
                                                 Background="Transparent"
-                                                BorderThickness="0">
-
-                                                <ListView.ItemContainerStyle>
-                                                    <Style TargetType="ListViewItem">
-                                                        <Setter Property="Focusable" Value="false" />
-                                                    </Style>
-                                                </ListView.ItemContainerStyle>
+                                                BorderThickness="0"
+                                                Visibility="{Binding IsExpanded, Converter={StaticResource BoolToVisibilityConverter}}"
+                                                >
 
                                                 <!-- Method parameter -->
-                                                <ListView.ItemTemplate>
+                                                <ItemsControl.ItemTemplate>
                                                     <DataTemplate>
                                                         <Grid>
                                                             
@@ -202,17 +211,25 @@
                                                                      Text="{Binding Value}" />
                                                         </Grid>
                                                     </DataTemplate>
-                                                </ListView.ItemTemplate>
-                                            </ListView>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                            <Button Grid.Row="3" 
+                                                    Command="{Binding CollapseCommand}"
+                                                    HorizontalAlignment="Right"
+                                                    Margin="0 10 0 10"
+                                                    Visibility="{Binding IsExpanded, Converter={StaticResource BoolToVisibilityConverter}}"
+                                                    >
+                                                Collapse
+                                            </Button>
                                         </Grid>
                                     </Border>
                                 </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
                     </StackPanel>
                 </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
 
         <GridSplitter Grid.Column="2" HorizontalAlignment="Stretch" />
 

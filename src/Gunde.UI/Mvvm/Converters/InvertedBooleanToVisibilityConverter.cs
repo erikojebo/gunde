@@ -4,6 +4,6 @@ namespace Gunde.UI.Mvvm.Converters
 {
     public class InvertedBooleanToVisibilityConverter : BooleanConverter<Visibility>
     {
-        public InvertedBooleanToVisibilityConverter() : base(Visibility.Collapsed, Visibility.Hidden) { }
+        public InvertedBooleanToVisibilityConverter() : base(Visibility.Collapsed, Visibility.Visible) { }
     }
 }
