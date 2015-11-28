@@ -66,13 +66,14 @@
         </StackPanel>
         
         <!-- Automation task groups -->
-        <ScrollViewer Grid.Column="1">
+        <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
             <ItemsControl
                 ItemsSource="{Binding TaskGroups}"
                 HorizontalContentAlignment="Stretch"
                 Background="Transparent"
                 BorderThickness="0"
-                ScrollViewer.CanContentScroll="False">
+                ScrollViewer.CanContentScroll="False"
+                Margin="0 0 10 0">
 
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
@@ -254,7 +255,7 @@
 
         <GridSplitter Grid.Column="2" HorizontalAlignment="Stretch" />
 
-        <ScrollViewer x:Name="LogScrollViewer" Grid.Column="3">
+        <ScrollViewer x:Name="LogScrollViewer" Grid.Column="3" VerticalScrollBarVisibility="Auto">
             <TextBox Background="Transparent"
                  Margin="10 0 10 10" 
                  BorderThickness="0"
