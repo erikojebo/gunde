@@ -194,9 +194,14 @@
                                                             <Trigger Property="ItemsControl.AlternationIndex" Value="1">
                                                                 <Setter Property="Grid.Background" Value="#eee" TargetName="ParameterContainer"/>
                                                             </Trigger>
+                                                            <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                                                                <Setter Property="Grid.Background" Value="#dedede" TargetName="ParameterContainer"/>
+                                                                <Setter Property="Border.BorderBrush" Value="#808080" TargetName="ParameterContainerBorder"/>
+                                                            </Trigger>
                                                         </DataTemplate.Triggers>
-                                                        
-                                                        <Grid x:Name="ParameterContainer">
+
+                                                        <Border x:Name="ParameterContainerBorder" BorderBrush="Transparent" BorderThickness="1">
+                                                            <Grid x:Name="ParameterContainer">
                                                             
                                                             <Grid.Resources>
                                                                 <Style TargetType="TextBlock">
@@ -225,6 +230,7 @@
                                                                      Text="{Binding Value}"
                                                                      Margin="0 2 0 2"/>
                                                         </Grid>
+                                                        </Border>
                                                     </DataTemplate>
                                                 </ItemsControl.ItemTemplate>
                                             </ItemsControl>
